@@ -76,6 +76,9 @@ export default function LimitOrder(props){
         handleSl();
         handleTp();
     },[price]);
+    useEffect(()=>{
+        setLeverage(props.leverage);
+    },[props.leverage])
     const handleSl=()=>{
         if(positionType&&positionType=="long") {
             setSl((price-price*(slRate/100)).toFixed(2));
@@ -208,6 +211,7 @@ export default function LimitOrder(props){
                     <TableCell colspan="2">
                         <Slider
                                 value={slRate}
+                                min={1}
                                 onChange={(e,newValue)=>{
                                     setSlRate(newValue); 
                                     handleSl();
@@ -221,11 +225,13 @@ export default function LimitOrder(props){
                 <TableRow>
                     <TableCell style={{width:'150px',textAlign:'center'}}><label className={classes.label}>익절가</label></TableCell>
                     <TableCell><TextField id="outlined-basic" name="tp" variant="outlined" size="small" value={tp} onChange={(e)=>setTp(parseFloat(e.target.value))}/></TableCell>
+                    <TableCell><label>{positionType&&positionType=="long"?">  본절가":"<  본절가"}</label></TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell colspan="2">
                         <Slider
                                 value={tpRate}
+                                min={1}
                                 onChange={(e,newValue)=>{
                                     setTpRate(newValue); 
                                     handleTp();
@@ -238,7 +244,7 @@ export default function LimitOrder(props){
                 </TableRow>
                 <TableRow>
                     <TableCell className={classes.td}><label className={classes.label} >총액</label></TableCell>
-                    <TableCell><label>{price*amount+(price*(0.08*leverage/100))}</label></TableCell>
+                    <TableCell><label>{((price+price*(0.08*leverage/100))*amount).toFixed(2) +" USDT"}</label></TableCell>
                 </TableRow>
 
                 <TableRow>

@@ -9,11 +9,13 @@ const binance = new Binance().options({
 (async()=>{
     
     // 선물 가격
-    // console.info( await binance.futuresPrices() );
+    console.info( (await binance.futuresPrices()).BNBUSDT );
+    console.info("롱: ", (await binance.futuresDepth( "BNBUSDT" )).bids[1][0] );
+    console.info("숏: ", (await binance.futuresDepth( "BNBUSDT" )).asks[1][0] );
     // 선물 계정 잔액 및 포지션
     // console.info( await binance.futuresAccount() );
     // 선물 잔액
-    console.info( JSON.parse(JSON.stringify(await binance.futuresBalance())).filter(item=> {if(item.asset=="USDT") console.info(item)}) );
+    // console.info( JSON.parse(JSON.stringify(await binance.futuresBalance())).filter(item=> {if(item.asset=="USDT") console.info(item)}) );
     // 선물 지정가 매수
     // console.info( await binance.futuresBuy( 'BTCUSDT', 0.1, 8222 ) );
     // 선물 지정가 매도
@@ -49,22 +51,28 @@ const binance = new Binance().options({
     // console.info( await binance.futuresExchangeInfo() );
     // console.info( await binance.futuresCandles( "TRXUSDT", "1m" ) );
     // // console.info("매수 호가: ", (await binance.futuresDepth( "BNBUSDT" )).bids );
-    // console.info("롱: ", (await binance.futuresDepth( "BNBUSDT" )).bids[1][0] );
     // // console.info("매도 호가: ", (await binance.futuresDepth( "BNBUSDT" )).asks );
+    // console.info("롱: ", (await binance.futuresDepth( "BNBUSDT" )).bids[1][0] );
     // console.info("숏: ", (await binance.futuresDepth( "BNBUSDT" )).asks[1][0] );
     // console.info( await binance.futuresQuote() );
     // console.info( await binance.futuresQuote( "BCHUSDT" ) );
     // console.info( await binance.futuresDaily() );
     // console.info( await binance.futuresOpenInterest( "BTCUSDT" ) );
     // console.info( await binance.futuresMarkPrice() );
-    // console.info( await binance.futuresMarkPrice( "ETHUSDT" ) );
+    console.info( await binance.futuresMarkPrice( "BNBUSDT" ) );
+    // 무기한 선물 계약의 표시 가격 공식은 다음과 같습니다.
+    // 표시 가격 = 중앙값 * (가격 1, 가격 2, 계약 가격)
+    // 가격 1 = 가격 지수 * (1 + 마지막 펀딩 비율 * (펀딩까지 시간 / 8))
+    // 가격 2 = 가격 지수 + 이동 평균 (30 분 기준) *
+    // * 이동 평균 (30 분 기준) = 이동 평균 ((Bid1 + Ask1) / 2- Price Index), 30 분 간격으로 1 분마다 측정
+    // * 중앙값 : 가격 1 <가격 2 <계약 가격이면 가격 2를 표시 가격으로 사용합니다.
     // console.info( await binance.futuresTrades('BTCUSDT'));
     // console.info( await binance.futuresAggTrades( "BTCUSDT" ) );
     // 선물청산주문
     // console.info( await binance.futuresLiquidationOrders() );
     // console.info( await binance.futuresFundingRate() );
     // 선물 거래 내역?
-    // console.info( await binance.futuresHistoricalTrades( "XMRUSDT" ) );
+    // console.info( await binance.futuresHistoricalTrades( "BNBUSDT" ) );
     // 선물 레버리지 브라켓 = 레버리지 설정 시 범위 ex) BNB 맥스 75배, 도지 맥스 50배
     // console.info( JSON.stringify(await binance.futuresLeverageBracket( "DOGEUSDT" )) );
     // console.info( await binance.futuresIncome() );
@@ -128,8 +136,20 @@ const binance = new Binance().options({
     // Return active sockets and subscriptions
     // console.log( binance.futuresSubscriptions() );
     // binance.depth ( "BNBUSDT" ,  ( error ,  depth ,  symbol )  =>  { 
-    //   console.info ( symbol + "market depth" ,  depth ) ; 
+    // //   console.info ( symbol + "market depth" ,  depth ) ; 
+    //   var dept = JSON.stringify(depth);
+    //   console.log(depth);
+    // //   console.info(dept.bids);
+    // //   console.info(dept.asks);
     // } ) ;
+    // binance.websockets.depth(['BNBUSDT'], async(depth) => {
+    //     let {e:eventType, E:eventTime, s:symbol, u:updateId, b:bidDepth, a:askDepth} = depth;
+    //     console.info(symbol+" market depth update");
+    //     console.info("bid ", bidDepth);
+    //     console.info("ask ",askDepth);
+    //     console.info("롱: ", (await binance.futuresDepth( "BNBUSDT" )).bids[1][0] );
+    //   console.info("숏: ", (await binance.futuresDepth( "BNBUSDT" )).asks[1][0] );
+    //   });
     // let socket = new WebSocket(" wss://stream.binance.com:9443/ws/bnbusdt@depth10@100ms");
     // socket.onmessage = function(event){
     // 	// console.log(event.data);
